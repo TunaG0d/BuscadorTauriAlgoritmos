@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buscador de Archivos y Comparación de Algoritmos</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Barra lateral de navegación -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo-icon">📁</div>
+        <h2>Buscador EDyA</h2>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-tab="tab-search">
+          <span class="icon">🔍</span>
+          <span>Búsqueda</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-compare">
+          <span class="icon">📊</span>
+          <span>Comparar Algoritmos</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-config">
+          <span class="icon">⚙️</span>
+          <span>Configuración</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-status">
+        <div class="status-label">Modo Activo:</div>
+        <div class="active-badge" id="sidebar-active-algo">Búsqueda lineal</div>
+        <div class="status-label" style="margin-top: 10px;">Archivos en índice:</div>
+        <div class="count-badge" id="sidebar-indexed-count">0</div>
+      </div>
+    </aside>
+
+    <!-- Área principal de contenido -->
+    <main class="main-content">
+      <!-- Pestaña 1: Búsqueda y Gestión de Archivos -->
+      <section id="tab-search" class="tab-pane active">
+        <!-- Barra de selección de carpeta e indexación -->
+        <header class="section-card indexer-bar">
+          <div class="input-group flex-1">
+            <label for="folder-path-input">Carpeta raíz:</label>
+            <div class="flex-row gap-8">
+              <input type="text" id="folder-path-input" placeholder="C:\Ruta\De\La\Carpeta" />
+              <button class="btn btn-secondary" id="btn-browse">Examinar...</button>
+              <button class="btn btn-primary" id="btn-index">Indexar Contenido</button>
+              <button class="btn btn-danger hidden" id="btn-cancel-index">Cancelar</button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Indicador y Barra de Progreso de Indexación -->
+        <div id="indexing-progress-container" class="section-card progress-panel hidden">
+          <div class="progress-header">
+            <span id="indexing-status-text">Indexando archivos...</span>
+            <span id="indexing-count-text" class="bold">0 procesados</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="indexing-progress-bar" class="progress-bar-fill"></div>
+          </div>
+          <div id="indexing-current-file" class="text-truncate file-hint"></div>
+        </div>
+
+        <!-- Barra de Búsqueda -->
+        <div class="section-card search-bar-card">
+          <div class="flex-row gap-12 align-center">
+            <div class="input-group flex-1">
+              <label for="search-input">Consulta por nombre:</label>
+              <input type="text" id="search-input" placeholder="Escribe el nombre o parte del nombre y presiona Enter..." />
+            </div>
+
+            <div class="input-group">
+              <label for="query-type-select">Tipo de coincidencia:</label>
+              <select id="query-type-select">
+                <option value="substring" selected>Subcadena (Parcial)</option>
+                <option value="prefix">Prefijo (Inicia con)</option>
+                <option value="exact">Exacta (Nombre completo)</option>
+              </select>
+            </div>
+
+            <button class="btn btn-accent" id="btn-search" style="margin-top: 20px;">Buscar</button>
+          </div>
+
+          <!-- Alerta de limitación de estructura si la consulta no es soportada -->
+          <div id="algo-compatibility-alert" class="alert-box alert-warning hidden" style="margin-top: 12px;"></div>
+        </div>
+
+        <!-- Indicador de carga de búsqueda -->
+        <div id="search-spinner" class="loading-bar hidden">
+          <div class="spinner"></div>
+          <span>Buscando coincidencias con ranking Top-K...</span>
+        </div>
+
+        <!-- Tabla de Resultados -->
+        <div class="section-card table-card flex-1">
+          <div class="table-header-info">
+            <h3 id="results-title">Resultados de búsqueda</h3>
+            <span id="results-meta" class="text-muted">0 elementos encontrados</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Nombre</th>
+                  <th style="width: 35%;">Ruta</th>
+                  <th style="width: 10%;">Tamaño</th>
+                  <th style="width: 15%;">Modificación</th>
+                  <th style="width: 15%;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="results-tbody">
+                <tr>
+                  <td colspan="5" class="empty-placeholder">Ingresa una carpeta, indexa su contenido y realiza una búsqueda.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pestaña 2: Comparación de Algoritmos -->
+      <section id="tab-compare" class="tab-pane">
+        <div class="section-card">
+          <h2>Comparación Empírica de Estructuras y Algoritmos</h2>
+          <p class="text-muted">
+            Ejecuta la misma consulta sobre los seis algoritmos de forma simultánea. Mide el tiempo de construcción del índice,
+            la mediana de 30 consultas (descartando la primera por caché fría) y la memoria aproximada.
+          </p>
+
+          <div class="flex-row gap-12 align-center" style="margin-top: 16px;">
+            <div class="input-group flex-1">
+              <label for="compare-query-input">Consulta de prueba:</label>
+              <input type="text" id="compare-query-input" placeholder="Nombre a buscar..." />
+            </div>
+
+            <div class="input-group">
+              <label for="compare-type-select">Tipo de prueba:</label>
+              <select id="compare-type-select">
+                <option value="exact" selected>Nombre exacto existente</option>
+                <option value="prefix">Prefijo</option>
+                <option value="substring">Subcadena</option>
+              </select>
+            </div>
+
+            <button class="btn btn-accent" id="btn-run-compare" style="margin-top: 20px;">
+              ⚡ Comparar Algoritmos
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador de carga de comparación -->
+        <div id="compare-spinner" class="loading-bar hidden">
+          <div class="spinner"></div>
+          <span>Ejecutando mediciones (construcción + 30 repeticiones por algoritmo)...</span>
+        </div>
+
+        <!-- Tabla comparativa -->
+        <div class="section-card table-card flex-1">
+          <div class="table-header-info">
+            <h3>Tabla Comparativa de Rendimiento</h3>
+            <span class="text-muted">Métricas obtenidas en tiempo real</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Algoritmo</th>
+                  <th>Estructura de Datos</th>
+                  <th>Construcción (ms)</th>
+                  <th>Consulta Mediana 30x (ms)</th>
+                  <th>Memoria Aprox (MB)</th>
+                  <th>Resultados</th>
+                  <th>Observaciones / Soporte</th>
+                </tr>
+              </thead>
+              <tbody id="compare-tbody">
+                <tr>
+                  <td colspan="7" class="empty-placeholder">Presiona "Comparar Algoritmos" para ejecutar el benchmark.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pestaña 3: Configuración -->
+      <section id="tab-config" class="tab-pane">
+        <div class="section-card" style="max-width: 650px;">
+          <h2>Configuración del Buscador</h2>
+          <p class="text-muted">Los cambios se aplican de inmediato en tiempo de ejecución sin reiniciar la aplicación y se persisten en disco.</p>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="config-algo-select" class="bold">Algoritmo de búsqueda activo:</label>
+            <select id="config-algo-select" class="form-control">
+              <option value="linear">Búsqueda lineal (Vec sin ordenar - O(n))</option>
+              <option value="binary">Búsqueda binaria (Vec ordenado - O(log n))</option>
+              <option value="hash">Índice hash (HashMap std - O(1) exacto)</option>
+              <option value="avl">Árbol AVL (Balanceado con rotaciones a mano - O(log n))</option>
+              <option value="bfs">Recorrido BFS (Árbol de directorios con cola - O(V+E))</option>
+              <option value="dfs">Recorrido DFS (Árbol de directorios con pila - O(V+E))</option>
+            </select>
+            <small class="text-muted hint-block">
+              Al cambiar el algoritmo, la estructura correspondiente se inicializa y reconstruye su índice de inmediato con los archivos en memoria.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-top: 20px;">
+            <label for="config-top-k" class="bold">Límite Top-K de resultados (BinaryHeap):</label>
+            <input type="number" id="config-top-k" min="5" max="500" value="20" class="form-control" />
+            <small class="text-muted hint-block">
+              Cantidad máxima de mejores coincidencias que el montículo mantendrá en O(n log K).
+            </small>
+          </div>
+
+          <div style="margin-top: 25px;">
+            <button class="btn btn-primary" id="btn-save-config">Guardar Configuración</button>
+            <span id="config-saved-hint" class="save-indicator hidden">✓ Guardado</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal / Panel de Vista Previa de Archivos -->
+  <div id="preview-modal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="preview-file-name" class="text-truncate">Vista previa del archivo</h3>
+        <button class="btn-close" id="btn-close-preview">&times;</button>
+      </div>
+      <div class="modal-meta" id="preview-meta"></div>
+      <div id="preview-spinner" class="loading-bar hidden">
+        <div class="spinner"></div>
+        <span>Cargando contenido...</span>
+      </div>
+      <pre id="preview-body" class="preview-text"></pre>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-modal-open-folder">Abrir carpeta contenedora</button>
+        <button class="btn btn-primary" id="btn-modal-open-file">Abrir con aplicación predeterminada</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
