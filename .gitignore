@@ -1,0 +1,8 @@
+/target
+src-tauri/target
+.cargo/
+Cargo.lock
+src-tauri/Cargo.lock
+config.json
+test_data_*
+datos_*

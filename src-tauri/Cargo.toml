@@ -1,0 +1,26 @@
+[package]
+name = "buscador-archivos"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tauri = { version = "1.8", features = ["dialog-open", "shell-open"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+walkdir = "2.5"
+tokio = { version = "1.40", features = ["sync", "time", "rt-multi-thread"] }
+
+[build-dependencies]
+tauri-build = "1.5"
+
+[lib]
+name = "buscador_archivos"
+path = "src/lib.rs"
+
+[[bin]]
+name = "buscador-archivos"
+path = "src/main.rs"
+
+[[bin]]
+name = "generate_dataset"
+path = "src/bin/generate_dataset.rs"
